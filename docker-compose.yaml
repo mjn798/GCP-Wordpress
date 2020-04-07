@@ -55,7 +55,7 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: ${MYSQL_USER}
       WORDPRESS_DB_NAME: wordpress
-    networks
+    networks:
       - wordpress
     healthcheck:
       test: "curl -sfI http://localhost/wp-admin/images/sort.gif || exit 1"
