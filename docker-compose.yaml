@@ -1,0 +1,67 @@
+version: '3.7'
+
+services:
+
+  # Database
+  database:
+    image: mariadb:10.5
+    container_name: mariadb
+    restart: always
+    volumes:
+      - ./data_db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT}
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: ${MYSQL_USER}
+      MYSQL_DATABASE: wordpress
+    networks:
+      - wordpress
+    healthcheck:
+      test: "/usr/bin/mysql --user=wordpress --password=${MYSQL_USER} --execute \"SHOW DATABASES;\""
+      interval: 10s
+      timeout: 1s
+      retries: 5
+      
+  # phpMyAdmin
+  phpmyadmin:
+    depends_on:
+      - database
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - 9182:80
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT}
+      HIDE_PHP_VERSION: 'true'
+    networks:
+      - wordpress
+      
+  # Wordpress
+  wordpress:
+    depends_on:
+      - database
+    image: wordpress:latest
+    container_name: wordpress
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./data_wp:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: database:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${MYSQL_USER}
+      WORDPRESS_DB_NAME: wordpress
+    networks
+      - wordpress
+    healthcheck:
+      test: "curl -sfI http://localhost/wp-admin/images/sort.gif || exit 1"
+      interval: 10s
+      timeout: 1s
+      retries: 5
+      
+networks:
+  wordpress:
