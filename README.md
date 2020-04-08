@@ -11,7 +11,7 @@ Get a free Wordpress instance running on [Google Cloud Platform](https://cloud.g
   * Machine type : f1-micro (included in free subscription)
   * Boot disk : Ubuntu 18.x LTS Minimal with a 20GB disk
   * Allow HTTP and HTTPS traffic
-* From the new VM Instance details, click the __nic0__ network interface and go to __Firewall rules__ and __Create Firewall Rule__
+* Go __Firewall rules__ in the __VPC Network__ section and __Create Firewall Rule__
   * Name : phpmyadmin-allow
   * Target tags : http-server https-server
   * Source IP ranges : 0.0.0.0/0
@@ -44,3 +44,8 @@ sudo docker-compose up -d
 * Start : `sudo docker start <container>`
 * Stop : `sudo docker stop <container>`
 * Restart : `sudo docker restart <container>`
+
+## Static IP Address
+
+* Go to __External IP Addresses__ in the __VPC Network__ section
+* For the wordpress instance instead of __Ephemeral__ choose __Static__, choose a name (i.e. wordpress) and reserve the static IP address
