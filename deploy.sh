@@ -19,12 +19,9 @@ chmod +x /usr/local/bin/docker-compose
 
 # Create the /docker directory, including random passwords and docker-compose.yaml
 mkdir /docker && \
-chown $(id -un):$(id -gn) /docker && \
 printf "MYSQL_ROOT=%s\n" $(pwgen 32 1) | tee /docker/.env && \
 printf "MYSQL_USER=%s\n" $(pwgen 32 1) | tee -a /docker/.env && \
 chmod 400 /docker/.env && \
 curl -L "https://raw.githubusercontent.com/mjn798/GCP-Wordpress/master/docker-compose.yaml" -o /docker/docker-compose.yaml && \
+chown $(id -un $SUDO_USER):$(id -gn $SUDO_USER) /docker -R && \
 cd /docker
-
-# Don't forget to run
-# sudo chown $(id -un):$(id -gn) /docker/.env /docker/docker-compose.yaml
