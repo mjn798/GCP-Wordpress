@@ -23,7 +23,7 @@ Get a free Wordpress instance running on [Google Cloud Platform](https://cloud.g
 Run the deploy.sh from this Repository.
 
 `
-sudo sh -c "$(https://raw.githubusercontent.com/mjn798/GCP-Wordpress/master/deploy.sh)"
+sudo sh -c "$(curl -sSL https://raw.githubusercontent.com/mjn798/GCP-Wordpress/master/deploy.sh)"
 `
 
 In the `/docker` directory, run
