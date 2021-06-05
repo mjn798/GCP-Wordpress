@@ -1,6 +1,7 @@
 # GCP-Wordpress
 Deploy Wordpress on [Google Cloud Platform](https://cloud.google.com/), \
-using [Traefik](https://traefik.io/) as a load balancer and securing traffic with [Let's Encrypt](https://letsencrypt.org/) certificates
+using [Traefik](https://traefik.io/) as a load balancer and securing traffic with [Let's Encrypt](https://letsencrypt.org/) certificates \
+Traffic will automatically be forwarded from HTTP to HTTPS to ensure secure connections
 
 # Setup and Deployment
 ## Create and Connect
@@ -43,7 +44,6 @@ Example:
 EMAIL=me@mydomain.com
 WORDPRESS_URL=wordpress.mydomain.com
 ```
-
 # Docker
 
 For the initial start use docker-compose in the corresponding directories
@@ -57,6 +57,27 @@ sudo docker-compose up -d
 cd /docker/wordpress
 sudo docker-compose up -d
 ```
+
+Traefik is configured to use a default certificate for testing \
+If Wordpress can be called correctly, fix the Traefik configuration in the `/docker/traefik/docker-compose.yaml` by commenting the following lines:
+
+```shell
+- "--log.level=DEBUG"
+- "--api.insecure=true"
+
+- "--certificatesresolvers.myhttpchallenge.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+```
+
+Delete Traefik with the `docker-compose down` command below \
+Delete the letsencrypt folder to get rid of the cached fake certificates
+
+```shell
+sudo rm /docker/traefik/letsencrypt -Rf
+```
+
+Run Traefik with the `docker-compose up` command below \
+It will take a couple of seconds to generate the proper certificates \
+After this, the browser should not longer give a warning when accessing the URL via HTTPS
 
 ## Docker Compose
 
