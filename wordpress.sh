@@ -8,7 +8,7 @@ do_run() {
     # Prepare Docker network and folders
     # generate random passwords for database users
     docker network create traefik
-    mkdir {/docker/traefik,/docker/wordpress} && \
+    mkdir /docker/traefik, /docker/wordpress && \
     printf "EMAIL=\n" | tee /docker/traefik/.env && \
     printf "MYSQL_ROOT=%s\n" $(pwgen 32 1) | tee /docker/wordpress/.env && \
     printf "MYSQL_USER=%s\n" $(pwgen 32 1) | tee -a /docker/wordpress/.env && \

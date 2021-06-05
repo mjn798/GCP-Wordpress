@@ -7,8 +7,9 @@ using [Traefik](https://traefik.io/) as a load balancer and securing traffic wit
 
 * Create a new Project
 * Create a new __VM Instance__ in __Compute Engine__
-  * Machine type: f1-micro (included in free subscription and only in certain US regions)
-  * Boot disk: Ubuntu 20.x LTS Minimal with a 30GB disk
+  * Machine Type: f1-micro (included in free subscription and only in certain US regions)
+    The f1-micro Machine Type is only available in the N1 (First Generation) Machine Family.
+  * Boot Disk: Ubuntu 20.x LTS Minimal with a 30 GB Standard persistent disk (not balanced)
   * Allow HTTP and HTTPS traffic
 * SSH into the new VM Instance
 
