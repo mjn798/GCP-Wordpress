@@ -1,27 +1,26 @@
 #!/bin/bash
 
-# Update OS and install additional tools
-apt update && apt upgrade -y && apt install nano pwgen -y
+do_run() {
 
-# Create and activate a 1GB swapfile
-fallocate -l 1G /swapfile && \
-dd if=/dev/zero of=/swapfile bs=1024 count=1048576 && \
-chmod 600 /swapfile && \
-mkswap /swapfile && \
-swapon /swapfile && \
-echo '/swapfile swap swap defaults 0 0' | tee -a /etc/fstab && \
-mount -a
+    # Install additional tools
+    apt install nano pwgen -y
 
-# Install Docker and Docker Compose
-sh -c "$(curl -sSL https://get.docker.com/)" && \
-curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
-chmod +x /usr/local/bin/docker-compose
+    # Create and activate a 2 GB swapfile
+    fallocate -l 2G /swapfile && \
+    dd if=/dev/zero of=/swapfile bs=1k count=2048 && \
+    chmod 600 /swapfile && \
+    mkswap /swapfile && \
+    swapon /swapfile && \
+    echo '/swapfile swap swap defaults 0 0' | tee -a /etc/fstab && \
+    mount -a
 
-# Create the /docker directory, including random passwords and docker-compose.yaml
-mkdir /docker && \
-printf "MYSQL_ROOT=%s\n" $(pwgen 32 1) | tee /docker/.env && \
-printf "MYSQL_USER=%s\n" $(pwgen 32 1) | tee -a /docker/.env && \
-chmod 400 /docker/.env && \
-curl -L "https://raw.githubusercontent.com/mjn798/GCP-Wordpress/master/docker-compose.yaml" -o /docker/docker-compose.yaml && \
-chown $(id -un $SUDO_USER):$(id -gn $SUDO_USER) /docker -R && \
-cd /docker
+    # Install Docker
+    sh -c "$(curl -sSL https://get.docker.com/)"
+
+    # Install Docker Compose
+    curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
+    chmod +x /usr/local/bin/docker-compose
+
+}
+
+do_run

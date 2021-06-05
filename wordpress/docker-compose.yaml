@@ -1,0 +1,60 @@
+version: "3"
+
+networks:
+  # Enable connection to traefik
+  traefik:
+    external: true
+  # Enable connection to other services
+  # - database
+  backend:
+
+services:
+
+  wordpress:
+
+    depends_on:
+      - database
+    image: wordpress:latest
+    container_name: wordpress
+    restart: unless-stopped
+    volumes:
+      - ./data_wordpress:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: database:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${MYSQL_USER}
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      - traefik
+      - backend
+    labels:
+      # The labels are usefull for Traefik only
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      # Get the routes from http
+      - "traefik.http.routers.wordpresscp.rule=Host(`${WORDPRESS_URL}`)"
+      - "traefik.http.routers.wordpresscp.entrypoints=web"
+      # Redirect these routes to https
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.wordpresscp.middlewares=redirect-to-https@docker"
+      # Get the routes from https
+      - "traefik.http.routers.wordpresscp-secured.rule=Host(`${WORDPRESS_URL}`)"
+      - "traefik.http.routers.wordpresscp-secured.entrypoints=web-secure"
+      # Apply autentificiation with http challenge
+      - "traefik.http.routers.wordpresscp-secured.tls=true"
+      - "traefik.http.routers.wordpresscp-secured.tls.certresolver=myhttpchallenge"
+
+  database:
+
+    image: mariadb:10.5
+    container_name: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT}
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: ${MYSQL_USER}
+      MYSQL_DATABASE: wordpress
+    volumes:
+      - ./data_database:/var/lib/mysql
+    networks:
+      - backend
